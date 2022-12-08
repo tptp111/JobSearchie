@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="/Users/leviquilliam/OneDrive/Sorted_Directory/University/Masters of Computer Science/ITO5136 - Software Engineering/Assessment Docs/JobSearchie/JobSearchie/Database/Database.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="3822"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,11:mainapplication"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="application" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="44"/><column index="2" value="37"/><column index="3" value="74"/><column index="4" value="51"/><column index="5" value="44"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="keyword" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="19"/><column index="2" value="84"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="user_full" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="25"/><column index="2" value="82"/><column index="3" value="64"/><column index="4" value="62"/><column index="5" value="178"/><column index="7" value="65"/><column index="8" value="97"/><column index="9" value="78"/><column index="10" value="74"/><column index="11" value="104"/><column index="12" value="102"/><column index="13" value="144"/><column index="14" value="68"/><column index="15" value="91"/><column index="16" value="94"/><column index="17" value="116"/><column index="18" value="58"/><column index="19" value="63"/><column index="20" value="52"/><column index="21" value="62"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="user_keyword" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="44"/><column index="2" value="68"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="Views.sql">DROP VIEW IF EXISTS user_full;
+
+CREATE VIEW IF NOT EXISTS user_full AS SELECT 
+	user.id AS id,
+	user.accountType AS accountType,
+	user.firstName AS firstName,
+	user.lastName AS lastName,
+	user.email AS email,
+	user.password AS password,
+	user.locationId AS locationId,
+	user.contactNumber AS contactNumber,
+	user.dateCreated AS dateCreated,
+	user.dateOfBirth AS  dateOfBirth,
+	user.currentJobName AS currentJobName,
+	user.currentJobLevel AS currentJobLevel,
+	user.expectedCompensation AS expectedCompensation,
+	user.resumeDir AS resumeDir,
+	user.coverLetterDir AS coverLetterDir,
+	user.companyName AS companyName,
+	user.recruitingSpecialty AS  recruitingSpecialty,
+	location.country AS country,
+	location.state AS state,
+	location.city AS city,
+	location.postcode AS postcode
+	FROM user INNER JOIN location ON user.locationId = location.id;</sql><sql name="Tables.sql">CREATE TABLE IF NOT EXISTS category ( 
+	id INTEGER PRIMARY KEY AUTOINCREMENT, 
+	category TEXT NOT NULL);
+
+CREATE TABLE IF NOT EXISTS location ( 
+	id INTEGER PRIMARY KEY AUTOINCREMENT, 
+	country TEXT NOT NULL, 
+	state TEXT, 
+	city TEXT, 
+	postcode TEXT );
+
+CREATE TABLE IF NOT EXISTS skill ( 
+	id INTEGER PRIMARY KEY AUTOINCREMENT, 
+	skill TEXT NOT NULL);
+
+CREATE TABLE IF NOT EXISTS session ( 
+	id INTEGER PRIMARY KEY AUTOINCREMENT, 
+	userId INTEGER NOT NULL, 
+	logInTime TEXT, 
+	logoutTime TEXT, 
+	FOREIGN KEY (userId) REFERENCES user(id));
+
+CREATE TABLE IF NOT EXISTS job ( 
+	id INTEGER PRIMARY KEY AUTOINCREMENT, 
+	jobTitle TEXT NOT NULL, 
+	companyName TEXT NOT NULL, 
+	categoryId INTEGER, 
+	locationId INTEGER, 
+	workType TEXT, 
+	workingArrangement TEXT, 
+	compensation INTEGER, 
+	jobLevel TEXT, 
+	description TEXT, 
+	dateCreated TEXT, 
+	FOREIGN KEY (categoryId) REFERENCES category(id) ,
+	FOREIGN KEY (locationId) REFERENCES Location(id) );
+
+CREATE TABLE IF NOT EXISTS user ( 
+	id INTEGER PRIMARY KEY AUTOINCREMENT, 
+	accountType TEXT NOT NULL, 
+	firstName TEXT NOT NULL, 
+	lastName TEXT, 
+	email TEXT NOT NULL, 
+	password TEXT NOT NULL, 
+	locationId INT, 
+	contactNumber TEXT, 
+	dateCreated TEXT, 
+	dateOfBirth TEXT, 
+	currentJobName TEXT, 
+	currentJobLevel TEXT, 
+	expectedCompensation INT, 
+	resumeDir TEXT, 
+	coverLetterDir TEXT, 
+	companyName TEXT, 
+	recruitingSpecialty TEXT, 
+	FOREIGN KEY (locationId) REFERENCES Location(id));
+
+CREATE TABLE IF NOT EXISTS message ( 
+	id INTEGER PRIMARY KEY AUTOINCREMENT, 
+	userTo INTEGER NOT NULL, 
+	userFrom INTEGER NOT NULL, 
+	dateTime TEXT, 
+	message TEXT, 
+	FOREIGN KEY (userTo) REFERENCES user(id),
+	FOREIGN KEY (userFrom) REFERENCES user(id) );
+
+CREATE TABLE IF NOT EXISTS application (
+	userId INTEGER NOT NULL, 
+	jobId INTEGER NOT NULL, 
+	coverLetter TEXT NOT NULL, 
+	resume TEXT NOT NULL, 
+	status TEXT NOT NULL, 
+	FOREIGN KEY (userId) REFERENCES user(id), 
+	FOREIGN KEY (jobId) REFERENCES job(id), 
+	PRIMARY KEY (userId, jobId));
+
+CREATE TABLE IF NOT EXISTS user_keywords (
+	userId INTEGER NOT NULL,
+	keywordId INTEGER NOT NULL,
+	FOREIGN KEY (userId) REFERENCES user(id),
+	FOREIGN KEY (keywordId) REFERENCES keyword(id),
+	PRIMARY KEY (userId, keywordId));
+</sql><sql name="SQL 3">SELECT * FROM user_full WHERE email = 'lqui0007@srudent.monash.edu'</sql><current_tab id="1"/></tab_sql></sqlb_project>
