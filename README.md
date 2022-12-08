@@ -3,7 +3,7 @@
 
 ## Description
 
-A job seach engine that runs on a terminal.
+A job seach engine that runs directly on a terminal.
 
 
 
